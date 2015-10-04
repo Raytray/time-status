@@ -6,21 +6,30 @@ from datetime import timedelta
 
 class TestTimeTrackerAnalyzer(unittest.TestCase):
 
-    def test_get_time_delta_perfect(self):
+    def test_get_month_year_perfect(self):
+        self.assertEqual("October - 2015",
+                         analyzer.get_month_year("2015-10-03 19:08:30"))
+
+    def test_get_month_year_empty(self):
+        self.assertRaises(ValueError,
+                          analyzer.get_month_year,
+                          "")
+
+    def test_get_timedelta_perfect(self):
         expected = timedelta(seconds=9)
         self.assertEqual(expected,
-                         analyzer.get_time_delta("2015-10-03 19:08:30",
+                         analyzer.get_timedelta("2015-10-03 19:08:30",
                                                  "2015-10-03 19:08:39"))
 
-    def test_get_time_delta_empty(self):
+    def test_get_timedelta_empty(self):
         self.assertRaises(ValueError,
-                          analyzer.get_time_delta,
+                          analyzer.get_timedelta,
                           "2015-10-03 19:08:30",
                           "")
 
-    def test_get_time_delta_negative(self):
+    def test_get_timedelta_negative(self):
         self.assertRaises(ValueError,
-                          analyzer.get_time_delta,
+                          analyzer.get_timedelta,
                           "2015-10-03 19:08:30",
                           "2015-10-03 19:08:00")
 
