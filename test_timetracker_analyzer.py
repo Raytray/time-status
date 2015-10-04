@@ -1,6 +1,7 @@
 import unittest
 import timetracker_analyzer as analyzer
 
+
 class TestTimeTrackerAnalyzer(unittest.TestCase):
 
     def test_total_up_tasks(self):
