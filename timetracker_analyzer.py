@@ -38,12 +38,32 @@ def analyze_data(filename):
     # call total up tasks
     # Add it to the month total for that task
     # If no end time, add it as an activity
+
+    results = dict
+
     with open(filename, 'r') as data:
+        task = 'task'
+        start_time = 'start_time'
+        end_time = 'end_time'
+
+        next(data) # Skip header for reader
         reader = csv.DictReader(data,
-                                fieldnames=['task', 'start_time', 'end_time'])
+                                fieldnames=[task, start_time, end_time])
         for row in reader:
-            month_year = get_month_year(row.start_time)
-            results[month_year]
+            month_year = get_month_year(row[start_time])
+            result_month = results.get(month_year, dict)
+            result_task = result_month.get(row[task], dict)
+
+            try:
+                timedelta = get_timedelta(row[start_time], row[end_time])
+            except ValueError as e:
+                print(str(e))
+
+            result_task.get(timedelta, timedelta(seconds=0)) + timedelta
+            result_task.get(count, 0) + 1
+            results[month_year][row[task]] = result_task
+
+    pprint(results)
 
 
 analyze_data('timetracker-2015-10-03-19-30-48.csv')
