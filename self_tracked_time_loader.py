@@ -20,11 +20,8 @@ def get_timedelta(start_time, end_time):
 
 def load_data(filename):
     """For a given file, load the data into MongoDb"""
-    # TODO: Move mongo client information out
-    # Set up mongo client
     client = MongoClient()
-    db = client.timetracker
-    collection = db.times
+    collection = client["timetracker"]["times"]
 
     # Loop through csv and create a array of documents
     with open(filename, 'r') as data:
