@@ -1,8 +1,8 @@
 import unittest
-import self_tracked_time_loader as loader
+import time_status as loader
 
 
-class TestSelfTrackedTimeLoader(unittest.TestCase):
+class TestTimeStatus(unittest.TestCase):
     def test_get_timedelta_perfect(self):
         expected = 9.0
         self.assertEqual(expected,
