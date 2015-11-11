@@ -10,8 +10,8 @@ app = Flask(__name__)
 
 @app.route('/api/time-status')
 def get_data():
-    config_collection = timetracker_db.get_config_collection()
-    return json.dumps(config_collection.find_one(), default=json_util.default)
+    times_collection = timetracker_db.get_times_collection()
+    return json.dumps(times_collection.find_one(), default=json_util.default)
 
 
 if __name__ == '__main__':
