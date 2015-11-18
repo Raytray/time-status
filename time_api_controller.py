@@ -8,8 +8,9 @@ from flask import Flask, jsonify
 app = Flask(__name__)
 
 
-@app.route('/api/time-status')
+@app.route('/api/time-series')
 def get_data():
+    """Time series Handler. Returns the times collection."""
     times_collection = timetracker_db.get_times_collection()
     return json.dumps(times_collection.find_one(), default=json_util.default)
 
