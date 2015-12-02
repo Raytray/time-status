@@ -1,3 +1,4 @@
+import argparse
 import csv
 import timetracker_db
 
@@ -59,5 +60,15 @@ def load_data(filename):
                                                last_date_document,
                                                upsert=True)
 
+
+def main():
+    """Main function, define arguments and make calls"""
+    parser = argparse.ArgumentParser()
+    parser.add_argument("filename", help="csv file to load")
+
+    args = parser.parse_args()
+    load_data(args.filename)
+
+
 if __name__ == "__main__":
-    load_data("testdata.csv")
+    main()
