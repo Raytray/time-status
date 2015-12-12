@@ -1,0 +1,22 @@
+{
+  "name": "time-status",
+  "version": "0.0.1",
+  "description": "Track my time and display the data on a periodic basis.",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Raytray/time-status.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Raytray/time-status/issues"
+  },
+  "homepage": "https://github.com/Raytray/time-status#readme",
+  "dependencies": {
+    "bower": "^1.7.1"
+  }
+}
