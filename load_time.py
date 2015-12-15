@@ -26,6 +26,9 @@ def load_data(filename):
         last_date_document = self_time_filter
         last_date_document['date'] = dt(2000, 1, 1)
 
+    # Temporary variable to figure out latest date
+    max_start_date = last_date_document['date']
+
     # Loop through csv and create a array of documents
     with open(filename, 'r') as data:
         reader = csv.DictReader(data)
@@ -40,13 +43,12 @@ def load_data(filename):
                 # If start_time is within last starttime, don't add.
                 if last_date_document['date'] >= start_time:
                     continue
+                elif max_start_date < start_time:
+                    max_start_date = start_time
 
                 # Get seconds
                 row['seconds'] = get_timedelta(start_time, end_time)
 
-                # Set last start datetime
-                if start_time > last_date_document['date']:
-                    last_date_document['date'] = start_time
             except ValueError:
                 continue
 
@@ -56,6 +58,8 @@ def load_data(filename):
     if (len(documents) > 0):
         times_collection = timetracker_db.get_times_collection()
         times_collection.insert(documents)
+
+        last_date_document['date'] = max_start_date
         config_collection.find_one_and_replace(self_time_filter,
                                                last_date_document,
                                                upsert=True)
