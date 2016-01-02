@@ -2,7 +2,7 @@ import json
 import timetracker_db
 
 from bson import json_util
-from flask import Flask, jsonify, render_template
+from flask import Flask, render_template, request
 
 
 app = Flask(__name__)
@@ -12,7 +12,8 @@ app = Flask(__name__)
 def get_data():
     """Time series Handler. Returns the times collection."""
     times_collection = timetracker_db.get_times_collection()
-    return json.dumps(times_collection.find_one(), default=json_util.default)
+    return json.dumps(times_collection.find_one({}, {"_id": 0}),
+                      default=json_util.default)
 
 
 @app.route('/')
