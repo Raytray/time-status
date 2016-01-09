@@ -37,17 +37,18 @@ def load_data(filename):
             try:
                 # Make datetime objects
                 date_format = "%Y-%m-%d %H:%M:%S"
-                start_time = dt.strptime(row['Start time'], date_format)
-                end_time = dt.strptime(row['End time'], date_format)
+                row['Start time'] = dt.strptime(row['Start time'], date_format)
+                row['End time'] = dt.strptime(row['End time'], date_format)
 
-                # If start_time is within last starttime, don't add.
-                if last_date_document['date'] >= start_time:
+                # If row['Start time'] is within last starttime, don't add.
+                if last_date_document['date'] >= row['Start time']:
                     continue
-                elif max_start_date < start_time:
-                    max_start_date = start_time
+                elif max_start_date < row['Start time']:
+                    max_start_date = row['Start time']
 
                 # Get seconds
-                row['seconds'] = get_timedelta(start_time, end_time)
+                row['seconds'] = get_timedelta(row['Start time'],
+                                               row['End time'])
 
             except ValueError:
                 continue

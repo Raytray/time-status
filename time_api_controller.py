@@ -12,8 +12,9 @@ app = Flask(__name__)
 def get_data():
     """Time series Handler. Returns the times collection."""
     times_collection = timetracker_db.get_times_collection()
-    start_date = request.args.get('start_date')
-    end_date = request.args.get('end_date')
+    date_format = "%Y-%m-%d"
+    start_date = dt.strptime(request.args.get('start_date'), date_format)
+    end_date = dt.strptime(request.args.get('end_date'), date_format)
     return json_util.dumps({
          'times': times_collection.find({
              'Start time': {'$gte': start_date},
