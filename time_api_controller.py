@@ -1,7 +1,7 @@
-import json
 import timetracker_db
 
 from bson import json_util
+from datetime import datetime as dt
 from flask import Flask, render_template, request
 
 
@@ -12,8 +12,14 @@ app = Flask(__name__)
 def get_data():
     """Time series Handler. Returns the times collection."""
     times_collection = timetracker_db.get_times_collection()
-    return json.dumps(times_collection.find_one({}, {"_id": 0}),
-                      default=json_util.default)
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
+    return json_util.dumps({
+         'times': times_collection.find({
+             'Start time': {'$gte': start_date},
+             'End time': {'$lte': end_date}},
+             {'_id': 0})
+     }, default=json_util.default)
 
 
 @app.route('/')
