@@ -34,6 +34,14 @@ class TestTimeAPIController(unittest.TestCase):
         assert self.app.get(
             '/api/time-series?end_date=2015-01-31').status_code == 200
 
+    def test_data_arguments_period(self):
+        assert self.app.get(
+            '/api/time-series?period=1d').status_code == 200
+
+    def test_data_arguments_period_bad(self):
+        assert self.app.get(
+            '/api/time-series?period=2015-01-01').status_code == 200
+
     def test_data_parameters_start_date(self):
         args = {'start_date': '2015-01-31'}
         result = {'Start time':
