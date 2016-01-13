@@ -1,7 +1,8 @@
 import time_api_controller
 import unittest
 
-from datetime import datetime as dt
+from datetime import date, datetime
+from dateutil.relativedelta import relativedelta
 
 
 class TestTimeAPIController(unittest.TestCase):
@@ -36,7 +37,7 @@ class TestTimeAPIController(unittest.TestCase):
     def test_data_parameters_start_date(self):
         args = {'start_date': '2015-01-31'}
         result = {'Start time':
-                  {'$gte': dt.strptime(args.get('start_date'),
+                  {'$gte': datetime.strptime(args.get('start_date'),
                                        self.date_format)
                }
         }
@@ -45,7 +46,7 @@ class TestTimeAPIController(unittest.TestCase):
     def test_data_parameters_end_date(self):
         args = {'end_date': '2015-01-31'}
         result = {'End time':
-                  {'$lte': dt.strptime(args.get('end_date'),
+                  {'$lte': datetime.strptime(args.get('end_date'),
                                        self.date_format)
                }
         }
@@ -55,19 +56,75 @@ class TestTimeAPIController(unittest.TestCase):
         args = {'start_date': '2015-01-31',
                 'end_date': '2015-02-01'}
         result = {'End time':
-                  {'$lte': dt.strptime(args.get('end_date'),
+                  {'$lte': datetime.strptime(args.get('end_date'),
                                        self.date_format)},
                    'Start time':
-                   {'$gte': dt.strptime(args.get('start_date'),
+                   {'$gte': datetime.strptime(args.get('start_date'),
                                        self.date_format)
                 }
         }
         assert time_api_controller.get_data_parameters(args) == result
 
-    def test_data_parameters_start_category(self):
+    def test_data_parameters_period_removes_end_date(self):
+        args = {'period': '1y',
+                'end_date': '2015-02-01'}
+        period = date.today() + relativedelta(years=-1)
+        result = {'Start time':
+                  {'$gte': datetime.combine(period, datetime.min.time())}}
+        assert time_api_controller.get_data_parameters(args) == result
+
+    def test_data_parameters_period_years(self):
+        args = {'period': '1y'}
+        period = date.today() + relativedelta(years=-1)
+        result = {'Start time':
+                  {'$gte': datetime.combine(period, datetime.min.time())}}
+        assert time_api_controller.get_data_parameters(args) == result
+
+    def test_data_parameters_period_months(self):
+        args = {'period': '1m'}
+        period = date.today() + relativedelta(months=-1)
+        result = {'Start time':
+                  {'$gte': datetime.combine(period, datetime.min.time())}}
+        assert time_api_controller.get_data_parameters(args) == result
+
+    def test_data_parameters_period_days(self):
+        args = {'period': '1d'}
+        period = date.today() + relativedelta(days=-1)
+        result = {'Start time':
+                  {'$gte': datetime.combine(period, datetime.min.time())}}
+        assert time_api_controller.get_data_parameters(args) == result
+
+    def test_data_parameters_period_years_days(self):
+        args = {'period': '1y2d'}
+        period = date.today() + relativedelta(years=-1, days=-2)
+        result = {'Start time':
+                  {'$gte': datetime.combine(period, datetime.min.time())}}
+        assert time_api_controller.get_data_parameters(args) == result
+
+    def test_data_parameters_period_years_months(self):
+        args = {'period': '1y2m'}
+        period = date.today() + relativedelta(years=-1, months=-2)
+        result = {'Start time':
+                  {'$gte': datetime.combine(period, datetime.min.time())}}
+        assert time_api_controller.get_data_parameters(args) == result
+
+    def test_data_parameters_period_years_months_days(self):
+        args = {'period': '1y3m2d'}
+        period = date.today() + relativedelta(years=-1, months=-3, days=-2)
+        result = {'Start time':
+                  {'$gte': datetime.combine(period, datetime.min.time())}}
+        assert time_api_controller.get_data_parameters(args) == result
+
+    def test_data_parameters_category(self):
         args = {'category': 'test'}
         result = {'Category': args.get('category')}
         assert time_api_controller.get_data_parameters(args) == result
+
+    def test_sanitize_match_group_none(self):
+        assert time_api_controller.sanitize_match_group(None) == 0
+
+    def test_sanitize_match_group_conversion(self):
+        assert time_api_controller.sanitize_match_group("1") == 1
 
 
 if __name__ == '__main__':

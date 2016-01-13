@@ -1,30 +1,72 @@
+import re
 import timetracker_db
 
 from bson import json_util
-from datetime import datetime as dt
+from datetime import date, datetime
+from dateutil.relativedelta import relativedelta
 from flask import Flask, render_template, Response, request
 
 
 app = Flask(__name__)
 
 
+def sanitize_match_group(group):
+    """Sanitize match group results so that default result is 0, not None.
+    The group result must be a int not a string."""
+    if group is None:
+        return 0
+    return int(group)
+
+
 def get_data_parameters(args):
+    """Converts url parameters of category, start date, end date and period
+    to be a mongo parameter search.
+
+    Category is not validated for a filtered set of categories.
+    Start date is the start of the requested data.
+    End date is the end of the reqested data.
+    Period is measured in years, months, days in the format of 1y2m3d
+        for retrieving data in the past 1 year, 2 months and 3 days.
+        Period will override start and end time requests."""
     date_format = "%Y-%m-%d"
-    start_date = args.get('start_date')
 
     parameters = {}
+    category = args.get('category')
+    if category is not None:
+        parameters['Category'] = category
+
+    start_date = args.get('start_date')
     if start_date is not None:
-        start_date = dt.strptime(start_date, date_format)
+        start_date = datetime.strptime(start_date, date_format)
         parameters['Start time'] = {'$gte': start_date}
 
     end_date = args.get('end_date')
     if end_date is not None:
-        end_date = dt.strptime(end_date, date_format)
+        end_date = datetime.strptime(end_date, date_format)
         parameters['End time'] = {'$lte': end_date}
 
-    category = args.get('category')
-    if category is not None:
-        parameters['Category'] = category
+    period = args.get('period')
+    if period is not None:
+        matches = re.match(
+            r"((?P<years>[\d]+)y)*((?P<months>[\d]+)m)*((?P<days>[\d]+)d)*",
+            period.lower())
+
+        years = matches.group('years')
+        months = matches.group('months')
+        days = matches.group('days')
+
+        years = sanitize_match_group(years)
+        months = sanitize_match_group(months)
+        days = sanitize_match_group(days)
+
+        period = date.today() + relativedelta(years=-years,
+                                            months=-months,
+                                            days=-days)
+        parameters['Start time'] = {'$gte':
+                                    datetime.combine(period,
+                                                     datetime.min.time())}
+        if parameters.get('End time'):
+            parameters.pop('End time')
 
     return parameters
 
