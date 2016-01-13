@@ -37,13 +37,19 @@ def get_data_parameters(args):
 
     start_date = args.get('start_date')
     if start_date is not None:
-        start_date = datetime.strptime(start_date, date_format)
-        parameters['Start time'] = {'$gte': start_date}
+        try:
+            start_date = datetime.strptime(start_date, date_format)
+            parameters['Start time'] = {'$gte': start_date}
+        except ValueError:
+            pass  # Skip argument if argument isn't valid.
 
     end_date = args.get('end_date')
     if end_date is not None:
-        end_date = datetime.strptime(end_date, date_format)
-        parameters['End time'] = {'$lte': end_date}
+        try:
+            end_date = datetime.strptime(end_date, date_format)
+            parameters['End time'] = {'$lte': end_date}
+        except ValueError:
+            pass  # Skip argument if argument isn't valid.
 
     period = args.get('period')
     if period is not None:

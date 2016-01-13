@@ -43,6 +43,16 @@ class TestTimeAPIController(unittest.TestCase):
         }
         assert time_api_controller.get_data_parameters(args) == result
 
+    def test_data_parameters_start_date_invalid(self):
+        args = {'start_date': '2015-01-00'}
+        result = {}
+        assert time_api_controller.get_data_parameters(args) == result
+
+    def test_data_parameters_end_date_invalid(self):
+        args = {'end_date': '2015-01-00'}
+        result = {}
+        assert time_api_controller.get_data_parameters(args) == result
+
     def test_data_parameters_end_date(self):
         args = {'end_date': '2015-01-31'}
         result = {'End time':
