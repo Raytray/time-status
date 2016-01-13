@@ -30,9 +30,17 @@ class TestTimeAPIController(unittest.TestCase):
         assert self.app.get(
             '/api/time-series?start_date=2015-01-31').status_code == 200
 
+    def test_data_arguments_start_date_invalid(self):
+        assert self.app.get(
+            '/api/time-series?start_date=2015-01-00').status_code == 400
+
     def test_data_arguments_end_date(self):
         assert self.app.get(
             '/api/time-series?end_date=2015-01-31').status_code == 200
+
+    def test_data_arguments_end_date_invalid(self):
+        assert self.app.get(
+            '/api/time-series?end_date=2015-01-00').status_code == 400
 
     def test_data_arguments_period(self):
         assert self.app.get(
@@ -54,12 +62,16 @@ class TestTimeAPIController(unittest.TestCase):
     def test_data_parameters_start_date_invalid(self):
         args = {'start_date': '2015-01-00'}
         result = {}
-        assert time_api_controller.get_data_parameters(args) == result
+        self.assertRaises(ValueError,
+                          time_api_controller.get_data_parameters,
+                          args)
 
     def test_data_parameters_end_date_invalid(self):
         args = {'end_date': '2015-01-00'}
         result = {}
-        assert time_api_controller.get_data_parameters(args) == result
+        self.assertRaises(ValueError,
+                          time_api_controller.get_data_parameters,
+                          args)
 
     def test_data_parameters_end_date(self):
         args = {'end_date': '2015-01-31'}

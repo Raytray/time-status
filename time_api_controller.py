@@ -6,6 +6,7 @@ from datetime import date, datetime
 from dateutil.relativedelta import relativedelta
 from flask import Flask, render_template, Response, request
 
+import pprint
 
 app = Flask(__name__)
 
@@ -37,19 +38,13 @@ def get_data_parameters(args):
 
     start_date = args.get('start_date')
     if start_date is not None:
-        try:
-            start_date = datetime.strptime(start_date, date_format)
-            parameters['Start time'] = {'$gte': start_date}
-        except ValueError:
-            pass  # Skip argument if argument isn't valid.
+        start_date = datetime.strptime(start_date, date_format)
+        parameters['Start time'] = {'$gte': start_date}
 
     end_date = args.get('end_date')
     if end_date is not None:
-        try:
-            end_date = datetime.strptime(end_date, date_format)
-            parameters['End time'] = {'$lte': end_date}
-        except ValueError:
-            pass  # Skip argument if argument isn't valid.
+        end_date = datetime.strptime(end_date, date_format)
+        parameters['End time'] = {'$lte': end_date}
 
     period = args.get('period')
     if period is not None:
@@ -82,14 +77,20 @@ def get_data():
     """Time series Handler. Returns the times collection."""
     times_collection = timetracker_db.get_times_collection()
 
-    parameters = get_data_parameters(request.args)
+    status = 200
+    try:
+        parameters = get_data_parameters(request.args)
+        data = json_util.dumps({
+            'times': times_collection.find(
+                parameters,
+                {'_id': 0})
+        }, default=json_util.default)
+    except ValueError as err:
+        data = json_util.dumps({"message": err.args,
+                "request": request.args})
+        status = 400
 
-    data = json_util.dumps({
-         'times': times_collection.find(
-             parameters,
-             {'_id': 0})
-     }, default=json_util.default)
-    response = Response(data, status=200, mimetype='application/json')
+    response = Response(data, status=status, mimetype='application/json')
     return response
 
 
