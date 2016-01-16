@@ -6,8 +6,13 @@ from datetime import datetime as dt
 
 
 def get_timedelta(start_time, end_time):
-    """Return end time minus start time.
-    Takes in start and end time as datetime objects
+    """Returns datetime.timedelta of start_time - end_time
+
+    :param start_time: Start time of delta.
+    :type start_time: datetime.datetime
+    :param end_time: End time of delta.
+    :type end_time: datetime.datetime
+    :rtype: datetime.timedelta
     """
     if (end_time - start_time).total_seconds() <= 0:
         raise ValueError("Start Time must be before End Time")
@@ -17,7 +22,12 @@ def get_timedelta(start_time, end_time):
 
 def load_data(filename):
     """For a given file, load the data into MongoDb
-    format of the file is...."""
+    Example format of the file is
+    Category,Start time,End time
+    Screen,2015-12-01 19:21:41,2015-12-01 19:21:43
+
+    :param filename: string path of the file to load.
+    """
     # Get last start date for self timed data
     config_collection = timetracker_db.get_config_collection()
     self_time_filter = {'last_date_type': 'self_time'}

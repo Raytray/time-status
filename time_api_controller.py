@@ -13,7 +13,11 @@ app = Flask(__name__)
 
 def sanitize_match_group(group):
     """Sanitize match group results so that default result is 0, not None.
-    The group result must be a int not a string."""
+    The group result must be a int not a string.
+
+    :param group: Match group from regex package.
+    :type group: str
+    :rtype: int"""
     if group is None:
         return 0
     return int(group)
