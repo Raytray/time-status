@@ -1,3 +1,20 @@
 <!doctype html>
-<title>Time Status Graph</title>
+<head>
+    <title>Time Status Graph</title>
 
+    <script src="{{ url_for('bower.static', filename='d3/d3.js') }}"></script>
+
+    <script src="{{ url_for('bower.static', filename='nvd3/build/nv.d3.js') }}"></script>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('bower.static', filename='nvd3/build/nv.d3.css') }}" />
+
+    <script src="{{ url_for('static', filename='js/bullet.js') }}"></script>
+</head>
+
+
+<body>
+    <div id="chart">
+        <svg style="height:80px" />
+    </div>
+
+    <script src="{{ url_for('static', filename='js/time-status.js') }}"></script>
+</body>

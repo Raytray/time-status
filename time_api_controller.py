@@ -5,10 +5,12 @@ from bson import json_util
 from datetime import date, datetime
 from dateutil.relativedelta import relativedelta
 from flask import Flask, render_template, Response, request
+from flask.ext.bower import Bower
 
 import pprint
 
 app = Flask(__name__)
+Bower(app)
 
 
 def sanitize_match_group(group):
