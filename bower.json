@@ -4,5 +4,11 @@
   "homepage": "https://github.com/Raytray/time-status",
   "authors": [
     "Raymond Tang <raymond@tang.me>"
-  ]
+  ],
+  "dependencies": {
+    "angular": "~1.4.9",
+    "d3": "~3.5.13",
+    "nvd3": "~1.8.1",
+    "angularjs-nvd3-directives": "~0.0.7"
+  }
 }

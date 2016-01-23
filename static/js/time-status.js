@@ -1,21 +1,21 @@
-nv.addGraph(function() {  
-  var chart = nv.models.bulletChart();
+var app = angular.module("timeStatus", ['nvd3ChartDirectives']);
 
-  d3.select('#chart svg')
-      .datum(exampleData())
-      .transition().duration(1000)
-      .call(chart);
+app.controller('bulletChartController', function($scope, $http) {
+    $scope.screenData = {};
 
-  return chart;
+    $http.get('api/time-series?period=1m&category=Screen')
+        .then(function(response) {
+            total = 0;
+            response.data.times.forEach(function(time) {
+                total += time.seconds;
+            });
+            total = total / 60.0 / 24;
+            console.log(total);
+            $scope.screenData = {
+                "measures": [total],
+                "title": "Screen Data",
+                "subtitle": "Measured in hours",
+                "ranges": [0, 500]
+            };
+        });
 });
-
-
-function exampleData() {
-  return {
-      "title":"Revenue",//Label the bullet chart
-      "subtitle":"US$, in thousands",//sub-label for bullet chart
-      "ranges":[150,225,300], //Minimum, mean and maximum values.
-      "measures":[220], //Value representing current measurement (the thick blue line in the example)
-      "markers":[250] //Place a marker on the chart (the white triangle marker)
-  };
-}

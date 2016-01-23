@@ -1,20 +1,29 @@
 <!doctype html>
-<head>
-    <title>Time Status Graph</title>
+<html>
+    <head>
+        <title>Time Status Graph</title>
 
-    <script src="{{ url_for('bower.static', filename='d3/d3.js') }}"></script>
+        <script src="{{ url_for('bower.static', filename='angular/angular.js') }}"></script>
+        <script src="{{ url_for('bower.static', filename='d3/d3.js') }}"></script>
+        <script src="{{ url_for('bower.static', filename='nvd3/build/nv.d3.js') }}"></script>
+        <script src="{{ url_for('bower.static', filename='angularjs-nvd3-directives/dist/angularjs-nvd3-directives.js') }}"></script>
 
-    <script src="{{ url_for('bower.static', filename='nvd3/build/nv.d3.js') }}"></script>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('bower.static', filename='nvd3/build/nv.d3.css') }}" />
+        <link rel="stylesheet" type="text/css" href="{{ url_for('bower.static', filename='nvd3/build/nv.d3.css') }}" />
 
-    <script src="{{ url_for('static', filename='js/bullet.js') }}"></script>
-</head>
+        <script src="{{ url_for('static', filename='js/time-status.js') }}"></script>
+    </head>
 
 
-<body>
-    <div id="chart">
-        <svg style="height:80px" />
-    </div>
-
-    <script src="{{ url_for('static', filename='js/time-status.js') }}"></script>
-</body>
+    <body ng-app="timeStatus">
+        <div ng-controller="bulletChartController">
+            <nvd3-bullet-chart
+                 data="screenData"
+                 id="screenDataId"
+                 margin="{left:110,top:60,bottom:60,right:10}"
+                 width="550"
+                 height="160">
+                <svg></svg>
+            </nvd3-bullet-chart>
+        </div>
+    </body>
+</html>
