@@ -54,28 +54,36 @@ def get_data_parameters(args):
 
     period = args.get('period')
     if period is not None:
-        matches = re.match(
-            r"((?P<years>[\d]+)y)*((?P<months>[\d]+)m)*((?P<days>[\d]+)d)*",
-            period.lower())
+        parameters['Start time'] = {'$gte': handle_period_argument(period)}
 
-        years = matches.group('years')
-        months = matches.group('months')
-        days = matches.group('days')
-
-        years = sanitize_match_group(years)
-        months = sanitize_match_group(months)
-        days = sanitize_match_group(days)
-
-        period = date.today() + relativedelta(years=-years,
-                                            months=-months,
-                                            days=-days)
-        parameters['Start time'] = {'$gte':
-                                    datetime.combine(period,
-                                                     datetime.min.time())}
         if parameters.get('End time'):
             parameters.pop('End time')
 
     return parameters
+
+
+def handle_period_argument(period):
+    """Returns the datetime object matching against the requested period"""
+    matches = re.match(
+        r"((?P<years>[\d]+)y)*((?P<months>[\d]+)m)*((?P<days>[\d]+)d)*",
+        period.lower())
+
+    years = matches.group('years')
+    months = matches.group('months')
+    days = matches.group('days')
+
+    years = sanitize_match_group(years)
+    months = sanitize_match_group(months)
+    days = sanitize_match_group(days)
+
+    period = date.today() + relativedelta(years=-years,
+                                          months=-months,
+                                          days=-days)
+    return datetime.combine(period, datetime.min.time())
+
+
+def convert_seconds_to_hours(seconds):
+    return float("{0:.2f}".format(seconds / 60 / 60.0))
 
 
 @app.route('/api/time-series')
@@ -97,6 +105,46 @@ def get_data():
         status = 400
 
     response = Response(data, status=status, mimetype='application/json')
+    return response
+
+
+@app.route('/api/time-series/month')
+def get_month_data():
+    """Time series Handler. Returns the times collection."""
+    times_collection = timetracker_db.get_times_collection()
+
+    status = 200
+    try:
+        results = {}
+        categories = request.values.getlist('category')
+        for category in categories:
+            parameters = {}
+            parameters['Category'] = category
+            parameters['Start time'] = {'$gte': handle_period_argument('1m')}
+
+            period1_seconds = sum([x['seconds'] for x in
+                                  list(times_collection.find(
+                                      parameters, {'_id': 0}))])
+
+            parameters['Start time'] = {'$gte': handle_period_argument('2m')}
+            parameters['End time'] = {'$lt': handle_period_argument('1m')}
+
+            period2_seconds = sum([x['seconds'] for x in
+                                  list(times_collection.find(
+                                      parameters, {'_id': 0}))])
+
+            results[category] = {
+                'previous': convert_seconds_to_hours(period2_seconds),
+                'current': convert_seconds_to_hours(period1_seconds)
+            }
+
+        results = json_util.dumps(results)
+    except ValueError as err:
+        data = json_util.dumps({"message": err.args,
+                "request": request.args})
+        status = 400
+
+    response = Response(results, status=status, mimetype='application/json')
     return response
 
 
