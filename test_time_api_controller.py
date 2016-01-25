@@ -50,6 +50,21 @@ class TestTimeAPIController(unittest.TestCase):
         assert self.app.get(
             '/api/time-series?period=2015-01-01').status_code == 200
 
+    def test_month_data_status(self):
+        assert self.app.get('/api/time-series/month').status_code == 200
+
+    def test_month_data_response(self):
+        assert self.app.get(
+            '/api/time-series/month').content_type == 'application/json'
+
+    def test_month_data_arguments_category(self):
+        assert self.app.get(
+            '/api/time-series/month?category=test').status_code == 200
+
+    def test_month_data_multiple_arguments_category(self):
+        assert self.app.get('/api/time-series/month' +
+                            '?category=test&category=tt2').status_code == 200
+
     def test_data_parameters_start_date(self):
         args = {'start_date': '2015-01-31'}
         result = {'Start time':
