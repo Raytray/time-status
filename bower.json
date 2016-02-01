@@ -10,5 +10,10 @@
     "d3": "~3.5.13",
     "nvd3": "~1.8.1",
     "angularjs-nvd3-directives": "~0.0.7"
+  },
+  "resolutions": {
+    "nvd3": "~1.8.1",
+    "angular": "~1.4.9",
+    "d3": "~3.5.13"
   }
 }
