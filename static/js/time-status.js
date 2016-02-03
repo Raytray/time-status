@@ -1,5 +1,10 @@
 var app = angular.module("timeStatus", ['nvd3ChartDirectives']);
 
+app.config(['$interpolateProvider', function($interpolateProvider) {
+  $interpolateProvider.startSymbol('{a');
+  $interpolateProvider.endSymbol('a}');
+}]);
+
 app.controller('bulletChartController', function($scope, $http) {
     var convertSecondsToHours = function(seconds) {
         return (seconds/60.0/60).toFixed(2);
@@ -15,7 +20,7 @@ app.controller('bulletChartController', function($scope, $http) {
     var getBulletData = function(data, category) {
         var bulletData = data[category]
         var maxRange = Math.max(bulletData['previous'],
-                                bulletData['current'])* 1.1;
+                                bulletData['current']) * 1.1;
         return {
             "title": category + " Data",
             "subtitle": "Measured in hours",
@@ -37,5 +42,13 @@ app.controller('bulletChartController', function($scope, $http) {
             $scope.workData = getBulletData(data, 'Work');
             $scope.homeData = getBulletData(data, 'Home');
             $scope.drivingData = getBulletData(data, 'Driving');
+
+            $scope.latest_date = new Date(data['period']['end_date']['$date'])
+                .toLocaleDateString();
+            $scope.period2_date = new Date(
+                data['period']['period2_start_date']['$date'])
+                .toLocaleDateString();
+            $scope.period_date = new Date(data['period']['period_start_date']['$date'])
+                .toLocaleDateString();
         });
 });
